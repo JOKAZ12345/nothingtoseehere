@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="soccer" Class="soccerDBDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="AppSettings" ConnectionString="Data Source=JOKAZ\SQLEXPRESS;Initial Catalog=soccer;Integrated Security=True;Encrypt=False;TrustServerCertificate=True" SettingsObjectName="SoccerDB.Properties.Settings" SettingsPropertyName="soccerConnectionString" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.Competition" Member="Competitions">
+    <Type Name="Competition">
+      <Column Name="Name" Type="System.String" DbType="VarChar(150) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="Country_name" Type="System.String" DbType="VarChar(150)" CanBeNull="true" />
+      <Column Name="Match_id" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Type" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Association Name="Competition_Country" Member="Countries" ThisKey="Name" OtherKey="Competition_name" Type="Country" />
+      <Association Name="Competition_Match" Member="Matches" ThisKey="Name" OtherKey="Competition_name" Type="Match" />
+      <Association Name="Competition_Team" Member="Team" ThisKey="Name" OtherKey="Name" Type="Team" Cardinality="One" />
+      <Association Name="Competition_Team1" Member="Teams" ThisKey="Name" OtherKey="compName" Type="Team" />
+      <Association Name="Country_Competition" Member="Country" ThisKey="Country_name" OtherKey="Name" Type="Country" IsForeignKey="true" />
+      <Association Name="Match_Competition" Member="Match" ThisKey="Match_id" OtherKey="id" Type="Match" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Country" Member="Countries">
+    <Type Name="Country">
+      <Column Name="Name" Type="System.String" DbType="VarChar(150) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="Competition_name" Type="System.String" DbType="VarChar(150)" CanBeNull="true" />
+      <Association Name="Country_Competition" Member="Competitions" ThisKey="Name" OtherKey="Country_name" Type="Competition" />
+      <Association Name="Country_Team" Member="Teams" ThisKey="Name" OtherKey="Country_name" Type="Team" />
+      <Association Name="Competition_Country" Member="Competition" ThisKey="Competition_name" OtherKey="Name" Type="Competition" IsForeignKey="true" />
+      <Association Name="Team_Country" Member="Team" ThisKey="Name" OtherKey="Name" Type="Team" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Match" Member="Matches">
+    <Type Name="Match">
+      <Column Name="id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="date" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="Home_team" Type="System.String" DbType="VarChar(150)" CanBeNull="true" />
+      <Column Name="Away_team" Type="System.String" DbType="VarChar(150)" CanBeNull="true" />
+      <Column Name="Competition_name" Type="System.String" DbType="VarChar(150)" CanBeNull="true" />
+      <Column Name="away_goals" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="home_goals" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="final_result" Type="System.Char" DbType="Char(1)" CanBeNull="true" />
+      <Association Name="Match_Competition" Member="Competitions" ThisKey="id" OtherKey="Match_id" Type="Competition" />
+      <Association Name="Match_Team" Member="Teams" ThisKey="id" OtherKey="Game_id" Type="Team" />
+      <Association Name="Competition_Match" Member="Competition" ThisKey="Competition_name" OtherKey="Name" Type="Competition" IsForeignKey="true" />
+      <Association Name="Team_Match" Member="Team" ThisKey="Home_team" OtherKey="Name" Type="Team" IsForeignKey="true" />
+      <Association Name="Team_Match1" Member="Team1" ThisKey="Away_team" OtherKey="Name" Type="Team" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Team" Member="Teams">
+    <Type Name="Team">
+      <Column Name="Name" Type="System.String" DbType="VarChar(150) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="Country_name" Type="System.String" DbType="VarChar(150)" CanBeNull="true" />
+      <Column Name="Game_id" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Alternative_Name" Type="System.String" DbType="VarChar(150)" CanBeNull="true" />
+      <Column Name="compName" Type="System.String" DbType="VarChar(150)" CanBeNull="true" />
+      <Association Name="Team_Country" Member="Country" ThisKey="Name" OtherKey="Name" Type="Country" Cardinality="One" />
+      <Association Name="Team_Match" Member="Matches" ThisKey="Name" OtherKey="Home_team" Type="Match" />
+      <Association Name="Team_Match1" Member="Matches1" ThisKey="Name" OtherKey="Away_team" Type="Match" />
+      <Association Name="Match_Team" Member="Match" ThisKey="Game_id" OtherKey="id" Type="Match" IsForeignKey="true" />
+      <Association Name="Competition_Team" Member="Competition" ThisKey="Name" OtherKey="Name" Type="Competition" IsForeignKey="true" />
+      <Association Name="Country_Team" Member="Country1" ThisKey="Country_name" OtherKey="Name" Type="Country" IsForeignKey="true" />
+      <Association Name="Competition_Team1" Member="Competition1" ThisKey="compName" OtherKey="Name" Type="Competition" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Function Name="dbo.AVG_AWAY_GOALS" Method="AVG_AWAY_GOALS">
+    <Parameter Name="CompetitionName" Parameter="competitionName" Type="System.String" DbType="VarChar(150)" />
+    <Parameter Name="start_date" Type="System.String" DbType="VarChar(150)" />
+    <Parameter Name="final_date" Type="System.String" DbType="VarChar(150)" />
+    <ElementType Name="AVG_AWAY_GOALSResult">
+      <Column Name="[Média golos marcados fora]" Member="Média_golos_marcados_fora" Type="System.Double" DbType="Float" CanBeNull="true" />
+      <Column Name="[Média golos sofridos fora]" Member="Média_golos_sofridos_fora" Type="System.Double" DbType="Float" CanBeNull="true" />
+    </ElementType>
+  </Function>
+  <Function Name="dbo.AVG_AWAY_TEAM" Method="AVG_AWAY_TEAM">
+    <Parameter Name="CompetitionName" Parameter="competitionName" Type="System.String" DbType="VarChar(150)" />
+    <Parameter Name="away" Type="System.String" DbType="VarChar(150)" />
+    <Parameter Name="final_date" Type="System.String" DbType="VarChar(150)" />
+    <Parameter Name="start_date" Type="System.String" DbType="VarChar(150)" />
+    <ElementType Name="AVG_AWAY_TEAMResult">
+      <Column Name="FORA" Type="System.String" DbType="VarChar(150)" CanBeNull="true" />
+      <Column Name="[A FAVOR]" Member="A_FAVOR" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="[% MARCADOS]" Member="__MARCADOS" Type="System.Double" DbType="Float" CanBeNull="true" />
+      <Column Name="CONTRA" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="[% SOFRIDOS]" Member="__SOFRIDOS" Type="System.Double" DbType="Float" CanBeNull="true" />
+    </ElementType>
+  </Function>
+  <Function Name="dbo.AVG_GOALS_GAME" Method="AVG_GOALS_GAME">
+    <Parameter Name="CompetitionName" Parameter="competitionName" Type="System.String" DbType="VarChar(150)" />
+    <Parameter Name="final_date" Type="System.String" DbType="VarChar(150)" />
+    <Parameter Name="start_date" Type="System.String" DbType="VarChar(150)" />
+    <Parameter Name="avg" Type="System.Double" DbType="Float" Direction="InOut" />
+    <ElementType Name="AVG_GOALS_GAMEResult">
+      <Column Name="" Member="Column1" Type="System.Double" DbType="Float" CanBeNull="true" />
+    </ElementType>
+  </Function>
+  <Function Name="dbo.AVG_HOME_GOALS" Method="AVG_HOME_GOALS">
+    <Parameter Name="CompetitionName" Parameter="competitionName" Type="System.String" DbType="VarChar(150)" />
+    <Parameter Name="final_date" Type="System.String" DbType="VarChar(150)" />
+    <Parameter Name="start_date" Type="System.String" DbType="VarChar(150)" />
+    <ElementType Name="AVG_HOME_GOALSResult">
+      <Column Name="[Média golos marcados casa]" Member="Média_golos_marcados_casa" Type="System.Double" DbType="Float" CanBeNull="true" />
+      <Column Name="[Média golos sofridos casa]" Member="Média_golos_sofridos_casa" Type="System.Double" DbType="Float" CanBeNull="true" />
+    </ElementType>
+  </Function>
+  <Function Name="dbo.AVG_HOME_TEAM" Method="AVG_HOME_TEAM">
+    <Parameter Name="CompetitionName" Parameter="competitionName" Type="System.String" DbType="VarChar(150)" />
+    <Parameter Name="home" Type="System.String" DbType="VarChar(150)" />
+    <Parameter Name="final_date" Type="System.String" DbType="VarChar(150)" />
+    <Parameter Name="start_date" Type="System.String" DbType="VarChar(150)" />
+    <ElementType Name="AVG_HOME_TEAMResult">
+      <Column Name="CASA" Type="System.String" DbType="VarChar(150)" CanBeNull="true" />
+      <Column Name="[A FAVOR]" Member="A_FAVOR" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="[% MARCADOS]" Member="__MARCADOS" Type="System.Double" DbType="Float" CanBeNull="true" />
+      <Column Name="CONTRA" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="[% SOFRIDOS]" Member="__SOFRIDOS" Type="System.Double" DbType="Float" CanBeNull="true" />
+    </ElementType>
+  </Function>
+  <Function Name="dbo.POWER_AWAY" Method="POWER_AWAY">
+    <Parameter Name="CompetitionName" Parameter="competitionName" Type="System.String" DbType="VarChar(150)" />
+    <Parameter Name="away" Type="System.String" DbType="VarChar(150)" />
+    <Parameter Name="start_date" Type="System.String" DbType="VarChar(150)" />
+    <Parameter Name="final_date" Type="System.String" DbType="VarChar(150)" />
+    <ElementType Name="POWER_AWAYResult">
+      <Column Name="FORA" Type="System.String" DbType="VarChar(150)" CanBeNull="true" />
+      <Column Name="[PODER ATAQUE]" Member="PODER_ATAQUE" Type="System.Double" DbType="Float" CanBeNull="true" />
+      <Column Name="[PODER DEFENSIVO]" Member="PODER_DEFENSIVO" Type="System.Double" DbType="Float" CanBeNull="true" />
+    </ElementType>
+  </Function>
+  <Function Name="dbo.POWER_HOME" Method="POWER_HOME">
+    <Parameter Name="CompetitionName" Parameter="competitionName" Type="System.String" DbType="VarChar(150)" />
+    <Parameter Name="home" Type="System.String" DbType="VarChar(150)" />
+    <Parameter Name="final_date" Type="System.String" DbType="VarChar(150)" />
+    <Parameter Name="start_date" Type="System.String" DbType="VarChar(150)" />
+    <ElementType Name="POWER_HOMEResult">
+      <Column Name="CASA" Type="System.String" DbType="VarChar(150)" CanBeNull="true" />
+      <Column Name="[PODER ATAQUE]" Member="PODER_ATAQUE" Type="System.Double" DbType="Float" CanBeNull="true" />
+      <Column Name="[PODER DEFENSIVO]" Member="PODER_DEFENSIVO" Type="System.Double" DbType="Float" CanBeNull="true" />
+    </ElementType>
+  </Function>
+</Database>
